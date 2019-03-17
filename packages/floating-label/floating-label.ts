@@ -33,7 +33,6 @@ export class MdcFloatingLabel extends MDCComponent<any>
       removeClass: (className: string) => this._getHostElement().classList.remove(className),
       getWidth: () => this._getHostElement().scrollWidth
     };
-
     return new MDCFloatingLabelFoundation(adapter);
   }
 

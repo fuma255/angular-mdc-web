@@ -8,9 +8,9 @@ import { takeUntil } from 'rxjs/operators';
 
 import { Platform } from '@angular-mdc/web/common';
 
+import { ponyfill } from '@material/dom/index';
 import {
   applyPassive,
-  getMatchesProperty,
   supportsCssVariables
 } from '@material/ripple/util';
 import { MDCRippleFoundation } from '@material/ripple/index';
@@ -73,13 +73,7 @@ export class MdcRipple implements OnDestroy {
     return {
       browserSupportsCssVars: () => this._platform.isBrowser ? supportsCssVariables(window) : false,
       isUnbounded: () => this._rippleConfig.unbounded,
-      isSurfaceActive: () => {
-        if (!this._platform.isBrowser) { return false; }
-
-        const MATCHES = getMatchesProperty(HTMLElement.prototype);
-        return this._rippleConfig.activator ? this._rippleConfig.activator[MATCHES](':active') :
-          this._rippleConfig.surface[MATCHES](':active');
-      },
+      isSurfaceActive: () => ponyfill.matches(this._rippleConfig.surface, ':active'),
       isSurfaceDisabled: () => this._rippleConfig.disabled,
       addClass: (className: string) => this._rippleConfig.surface.classList.add(className),
       removeClass: (className: string) => this._rippleConfig.surface.classList.remove(className),

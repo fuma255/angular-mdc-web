@@ -25,6 +25,7 @@ import { ControlValueAccessor, FormGroupDirective, NgControl, NgForm } from '@an
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { MDCComponent } from '@angular-mdc/web/base';
 import { toBoolean, Platform } from '@angular-mdc/web/common';
 import { MdcRipple } from '@angular-mdc/web/ripple';
 import { MdcNotchedOutline } from '@angular-mdc/web/notched-outline';
@@ -46,7 +47,7 @@ import { MdcSelectIcon } from './select-icon';
 
 import { MDCSelectHelperTextFoundation } from '@material/select/helper-text/index';
 import { cssClasses } from '@material/select/constants';
-import { MDCSelectFoundation } from '@material/select/index';
+import { MDCSelectFoundation, MDCSelectAdapter } from '@material/select/index';
 
 /**
  * Represents the default options for mdc-select that can be configured
@@ -297,13 +298,14 @@ export class MdcSelect extends _MdcSelectMixinBase implements AfterContentInit, 
     return !this._hasFloatingLabel() && this.getValue() ? '' : this.placeholder;
   }
 
-  private _createAdapter() {
-    return Object.assign(
-      this._isEnhancedVariant() ? this._getEnhancedSelectAdapterMethods() : this._getNativeSelectAdapterMethods(),
-      this._getCommonAdapterMethods(),
-      this._getOutlineAdapterMethods(),
-      this._getLabelAdapterMethods()
-    );
+  getDefaultFoundation() {
+    const adapter: MDCSelectAdapter | any = {
+      ...this._isEnhancedVariant() ? this._getEnhancedSelectAdapterMethods() : this._getNativeSelectAdapterMethods(),
+      ...this._getCommonAdapterMethods(),
+      ...this._getOutlineAdapterMethods(),
+      ...this._getLabelAdapterMethods()
+    };
+    return new MDCSelectFoundation(adapter, this._getFoundationMap());
   }
 
   private _getCommonAdapterMethods() {
@@ -473,7 +475,6 @@ export class MdcSelect extends _MdcSelectMixinBase implements AfterContentInit, 
   }
 
   init(): void {
-    this._foundation = new MDCSelectFoundation(this._createAdapter(), this._getFoundationMap());
     this._changeDetectorRef.detectChanges();
 
     // initialize after running a detectChanges()
